@@ -22,7 +22,8 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 client.connect(err => {
   const reviewCollection = client.db("destination-anywhere").collection("reviews");
-
+  
+  // send review info to server
   app.post ('/addReview', (req, res) => {
     const newReview = req.body;
     reviewCollection.insertOne(newReview)
@@ -40,8 +41,8 @@ client.connect(err => {
   })
 
 
-
-  const serviceCollection = client.db("destination-anywhere").collection("services");
+const serviceCollection = client.db("destination-anywhere").collection("services");
+  // send service info to server
   app.post ('/addService', (req, res) => {
     const newService = req.body;
     serviceCollection.insertOne(newService)
@@ -58,7 +59,29 @@ client.connect(err => {
     })
   })
 
-  app.get('/dashboard/booking/:id', (req,res) => {
+
+
+// send admin info to server
+  const adminCollection = client.db("destination-anywhere").collection("admins");
+  app.post ('/addAdmin', (req, res) => {
+    const newReview = req.body;
+    adminCollection.insertOne(newReview)
+    .then(result =>{
+       res.send(result.insertedCount>0);
+    })
+  })
+
+  // send booking info to server
+  const bookingCollection = client.db("destination-anywhere").collection("bookings");
+  app.post('/addBooking', (req, res) => {
+    const booking = req.body;
+    bookingCollection.insertOne(booking)
+        .then(result => {
+            res.send(result.insertedCount > 0)
+        })
+});
+
+ app.get('/dashboard/booking/:id', (req,res) => {
     serviceCollection.find({_id: ObjectId (req.params.id)})
     .toArray((err, items) => {
       console.log(items)
