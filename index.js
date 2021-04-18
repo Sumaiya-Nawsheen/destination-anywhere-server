@@ -92,6 +92,33 @@ const serviceCollection = client.db("destination-anywhere").collection("services
 
 });
 
+app.post('/bookingsByEmail', (req, res) => {
+  const date = req.body;
+  const email = req.body.email;
+  adminCollection.find({ email: email })
+      .toArray((err, documents) => {
+          const filter = { date: date.date }
+          if (documents.length === 0) {
+              filter.email = email;
+          }
+          bookingCollection.find(filter)
+              .toArray((err, docs) => {
+                  console.log(email, date.date, doctors, documents)
+                  res.send(docs);
+              })
+      })
+
+      app.post('/isAdmin', (req, res) => {
+        const email = req.body.email;
+        adminCollection.find({ email: email })
+            .toArray((err, documents) => {
+                res.send(documents.length > 0);
+            })
+    })
+})
+
+
+
 
 
 app.listen(port, () => {
